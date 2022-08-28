@@ -1,6 +1,6 @@
 using API.Data;
-using Microsoft.EntityFrameworkCore; 
-
+using Microsoft.EntityFrameworkCore;
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -10,26 +10,43 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<StoreContext>(opt=>{ 
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")); 
-}); 
+builder.Services.AddDbContext<StoreContext>(opt =>
+{
+    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+//
+#region Cors
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+            // policy.AllowAnyHeader()
+            // .AllowAnyMethod()
+            // .AllowCredentials()
+            // .WithOrigins("http://localhost:3000/");
+        });
+});
+#endregion
 
 var app = builder.Build();
 
 #region  //สร้ำงข้อมูลจำลอง Fake data 
-        using var scope = app.Services.CreateScope(); //using หลังทำงำนเสร็จจะถูกทลำยจำกMemory 
-        var context = scope.ServiceProvider.GetRequiredService<StoreContext>(); 
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>(); 
-        try 
-        { 
-            // orm
-            await context.Database.MigrateAsync();   //สร้ำง DB ใหอ้ตัโนมตัถิำยังไม่มี
-            await DbInitializer.Initialize(context); //สร้ำงข้อมูลสินค้ำจำลอง 
-        } 
-        catch (Exception ex) 
-        { 
-            logger.LogError(ex, "Problem migrating data"); 
-        } 
+using var scope = app.Services.CreateScope(); //using หลังทำงำนเสร็จจะถูกทลำยจำกMemory 
+var context = scope.ServiceProvider.GetRequiredService<StoreContext>();
+var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+try
+{
+    // orm
+    await context.Database.MigrateAsync();   //สร้ำง DB ใหอ้ตัโนมตัถิำยังไม่มี
+    await DbInitializer.Initialize(context); //สร้ำงข้อมูลสินค้ำจำลอง 
+}
+catch (Exception ex)
+{
+    logger.LogError(ex, "Problem migrating data");
+}
 #endregion
 
 // Configure the HTTP request pipeline.
@@ -43,6 +60,8 @@ if (app.Environment.IsDevelopment())
 
 // ไปที่ Methon ต่างๆได้
 app.UseRouting();
+
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthorization();
 

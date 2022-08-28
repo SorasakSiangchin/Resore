@@ -21,7 +21,7 @@ namespace API.Controllers
             
         }
 
-        [HttpGet("[action]")]
+        [HttpGet]
         //ActionResult<IEnumerable<Product>>
         public async Task<IActionResult>  GetProducts () {
               //Ok หมายถึง รหัส 200
