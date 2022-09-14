@@ -2,19 +2,23 @@ import { Grid, Typography, Divider, TableContainer, Table, TableBody, TableRow, 
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import agent from '../../app/api/agent';
+import NotFound from '../../app/errors/NotFound';
+import LoadingComponent from '../../app/layout/LoadingComponent';
 import { Product } from '../../app/models/Product';
 
 const ProductDetails = () => {
-  const { id } = useParams(); //อ่ำนค่ำจำกพำรำมิเตอรท์ส่ี่งมำตำมพำท (URL Parameters) 
+  const { id } = useParams<{id :any}>(); //อ่ำนค่ำจำกพำรำมิเตอรท์ส่ี่งมำตำมพำท (URL Parameters) 
   const [product , setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  
   useEffect(()=>{
-    axios.get(`http://localhost:5000/api/Products/GetProduct/${id}`).then((respons)=>{
-        setProduct(respons.data)
+   agent.Catalog.details(parseInt(id)).then((respons)=>{
+        setProduct(respons)
     }).catch((error)=>{ console.log(error) }).finally(()=>{setLoading(false)});
   },[ id ]);
-  if(loading) return <h1>Loading...</h1>
-  if(!product) return <h1>Product Nut Found...</h1>
+  if(loading) return <LoadingComponent message="Loading Products....." />
+  if(!product) return <NotFound/>
   return ( 
     <Grid container spacing={6}> 
       <Grid item xs={6}> 

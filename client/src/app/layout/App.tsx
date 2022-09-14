@@ -9,11 +9,14 @@ import HomePage from '../../features/home/HomePage';
 import ContactPage from '../../features/contact/ContactPage';
 import AboutPage from '../../features/about/AboutPage';
 import ProductDetails from '../../features/catalog/ProductDetails';
-
+import NotFound from '../errors/NotFound';
+import ServerError from '../errors/ServerError';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const App = () => {
-  const [mode , setMode]=  React.useState(true);
+  const [mode, setMode] = React.useState(true);
   const displayMode = !mode ? 'dark' : 'light';
 
   const handleMode = () => {
@@ -22,25 +25,32 @@ const App = () => {
 
   const darkTheme = createTheme({
     palette: {
-      mode: displayMode ,
+      mode: displayMode,
     },
   });
 
   return (
     <React.Fragment>
       <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
-      <Header handleMode={handleMode} />
-       <Container>
+        <ToastContainer
+          position="bottom-right"
+          autoClose={1000}
+          theme="colored"
+        />
+        <CssBaseline />
+        <Header handleMode={handleMode} />
+        <Container>
           <Routes>
-            <Route path="/" element={<HomePage/>} />
-            <Route path="/contact" element={<ContactPage/>} />
-            <Route path="/about" element={<AboutPage/>} />
-            <Route path="/catalog" element={<Catalog/>} />
-            <Route path="/catalog/:id" element={<ProductDetails/>} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/catalog" element={<Catalog />} />
+            <Route path="/server-error" element={<ServerError />} />
+            <Route path="/catalog/:id" element={<ProductDetails />} />
+            <Route path='*' element={<NotFound />} />
           </Routes>
         </Container>
-    </ThemeProvider>
+      </ThemeProvider>
     </React.Fragment>
   )
 

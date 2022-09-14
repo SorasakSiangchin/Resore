@@ -1,4 +1,5 @@
 using API.Data;
+using API.Middleware;
 using Microsoft.EntityFrameworkCore;
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -57,6 +58,10 @@ if (app.Environment.IsDevelopment())
 }
 // ใช้กับพวก Web
 //app.UseHttpsRedirection();
+
+#region ส่งerror ไปให ้Axios ตอนทำ Interceptor 
+  app.UseMiddleware<ExceptionMiddleware>();  
+#endregion
 
 // ไปที่ Methon ต่างๆได้
 app.UseRouting();
