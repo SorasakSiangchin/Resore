@@ -9,6 +9,8 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import { IconButton } from '@mui/material';
 import { NavLink } from 'react-router-dom';
+import { useStoreContext } from '../context/StoreContext';
+import { Link } from 'react-router-dom';
 const label = { inputProps: { 'aria-label': 'Color switch demo' } };
 const midLinks = [ 
   { title: "catalog", path: "/catalog" }, 
@@ -34,6 +36,12 @@ const navStyles = {
 }; 
 
 const Header = (props: any) => {
+
+  const { basket } = useStoreContext();
+  const itemCount = basket?.items.reduce((sum, item) => sum + item.quantity, 0);
+
+
+
   return (
     <>
       <Box sx={{ flexGrow: 1, mb: 5 }}>
@@ -65,8 +73,8 @@ const Header = (props: any) => {
               </List>
             </Box>
             <Box  sx={{ display: "flex" }}>
-              <IconButton size='large' color='inherit' >
-              <Badge badgeContent={4} color="error" sx={{ mr:"4px" }}>
+              <IconButton component={Link} to="/basket" size='large' color='inherit' >
+              <Badge badgeContent={itemCount} color="error" sx={{ mr:"4px" }}>
                 <ShoppingCartIcon />
               </Badge>
               </IconButton>

@@ -23,11 +23,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
         policy =>
         {
-            policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+            policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000");
             // policy.AllowAnyHeader()
             // .AllowAnyMethod()
             // .AllowCredentials()
-            // .WithOrigins("http://localhost:3000/");
+            // .WithOrigins("http://localhost:3000");
         });
 });
 #endregion

@@ -1,10 +1,14 @@
 /* eslint-disable no-duplicate-case */
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { Navigate, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { history } from "../..";
+
+
 // ใช้รว่มกัน
 axios.defaults.baseURL = "http://localhost:5000/api/";
+
+//ให้เครดิตความน่าเชื่อถือ ขออนุญาติเข้าถึง cookies
+axios.defaults.withCredentials = true; 
 
  const ResponseBody = (response:AxiosResponse)=>{
     return response.data
@@ -56,13 +60,16 @@ axios.interceptors.response.use(async (response) => {
 
 const requests = {
     get : (url : string)=> axios.get(url).then(ResponseBody) ,
+    // body? ส่งก็ได้ไม่ส่งก็ได้
+    post : (url : string , body = {})=> axios.post(url , body).then(ResponseBody) ,
+    delete : (url : string)=> axios.delete(url).then(ResponseBody) ,
     
-}
+};
 
 const Catalog = {
       list : () => requests.get("Products"),
       details: (id: number) => requests.get(`Products/GetProducts/${id}`), 
-}
+};
 
 const TestError = {
     get400Error: () => requests.get('buggy/GetBadRequest'), 
@@ -70,11 +77,18 @@ const TestError = {
     get404Error : ()=>requests.get("Buggy/GetNotFound"),
     get500Error: () => requests.get('buggy/GetServerError'), 
     getValidationError: () => requests.get('buggy/GetValidationError'), 
-}
+};
+
+const Basket = {
+    get : () => requests.get("Basket/GetBasket"),
+    addItem : (productId : number , quantity = 1) => requests.post(`basket?productId=${productId}&quantity=${quantity}`),
+    removeItem : (productId : number , quantity = 1) => requests.delete(`basket?productId=${productId}&quantity=${quantity}`),
+};
 
 const agent = {
     Catalog ,
-    TestError
-}
+    TestError ,
+    Basket
+};
 
 export default agent;
