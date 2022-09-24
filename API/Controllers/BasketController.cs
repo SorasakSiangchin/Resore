@@ -44,7 +44,9 @@ namespace API.Controllers
             // ถ้าไม่มีให้สร้าง
             if (basket == null) basket = CreateBasket(); 
             var product = await _storeContext.Products.FindAsync(productId); 
-            if (product == null) return NotFound(); 
+
+            if (product == null) return BadRequest(new ProblemDetails{Title="Product Not found"});
+            
             basket.AddItem(product, quantity); 
             var result = await _storeContext.SaveChangesAsync() > 0; 
             //Redirect to Route 

@@ -3,34 +3,33 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { LoadingButton } from '@mui/lab';
 import { Grid, Typography, Divider, TableContainer, Table, TableBody, TableRow, TableCell, TextField } from '@mui/material';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import agent from '../../app/api/agent';
-import { useStoreContext } from '../../app/context/StoreContext';
 import NotFound from '../../app/errors/NotFound';
 import LoadingComponent from '../../app/layout/LoadingComponent';
-import { Product } from '../../app/models/Product';
+import { useAppSelector , useAppDispatch} from '../../app/store/configureStore';
+import { addBasketItemAsync, removeBasketItemAsync } from '../basket/basketSlice';
+import { fetchProductAsync, productSelectors } from './catalogSlice';
 
 const ProductDetails = () => {
-  const { id } = useParams<{id :any}>(); //อ่ำนค่ำจำกพำรำมิเตอรท์ส่ี่งมำตำมพำท (URL Parameters) 
-  const [product , setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  
 
-  const { basket, setBasket, removeItem } = useStoreContext();
+  const { id } = useParams<{ id: any }>(); //อ่านค่าจากพารามิเตอร์ที่ส่งมาตามพาท (URL Parameters)
+  const product = useAppSelector(state => productSelectors.selectById(state, id));
+  const { status: productStatus } = useAppSelector(state => state.catalog);
+
+      
+  const dispatch = useAppDispatch();
+  const { basket , status } = useAppSelector(state => state.basket);
+
   const [quantity, setQuantity] = useState(0);
-  const [submitting, setSubmitting] = useState(false);
 
   // เพื่อ check ว่าซื้อไปแล้วกี่ชิ้น
   const item = basket?.items.find((i) => i.productId === product?.id);
 
-  useEffect(()=>{
-   if(item) setQuantity(item.quantity);
-   agent.Catalog.details(parseInt(id)).then((respons)=>{
-      setProduct(respons)
-   }).catch((error) => { console.log(error) }).finally(() => { setLoading(false) });
-  },[ id , item ]);
+  useEffect(() => {
+    if (item) setQuantity(item.quantity);
+    if (!product) dispatch(fetchProductAsync(parseInt(id)))
+  }, [id,item,dispatch,product]);
 
   function handleInputChange(event: any) {
     if (event.target.value >= 0) {
@@ -38,28 +37,33 @@ const ProductDetails = () => {
     }
   };
 
+  if (productStatus.includes('pending')) return <LoadingComponent message="Loading Products....." />;
+
+  if (!product) return <NotFound />;
+
   function handleUpdateCart() {
-    setSubmitting(true);
     // ถ้าสินค้าไม่มีหรือจำนวนที่ใส่เข้าไปไหม่มากกว่าของเก่า
     if (!item || quantity > item.quantity) {
       // ถ้ามันมี
       const updatedQuantity = item ? quantity - item.quantity : quantity;
-      agent.Basket.addItem(product?.id!, updatedQuantity)
-        .then((basket) => setBasket(basket))
-        .catch((error) => console.log(error))
-        .finally(() => setSubmitting(false));
-    } else {
+      dispatch(
+        addBasketItemAsync({
+          productId: product?.id!,
+          quantity: updatedQuantity,
+        })
+      );
+    } else { 
       const updatedQuantity = item.quantity - quantity;
-      agent.Basket.removeItem(product?.id!, updatedQuantity)
-        .then(() => removeItem(product?.id!, updatedQuantity))
-        .catch((error) => console.log(error))
-        .finally(() => setSubmitting(false));
-    }
+      dispatch(
+        removeBasketItemAsync({
+          productId: product?.id!,
+          quantity: updatedQuantity,
+        })
+      );
+    };
   };
 
-  if(loading) return <LoadingComponent message="Loading Products....." />
-
-  if(!product) return <NotFound/>
+  if(!product) return <NotFound/> ;
   
   return ( 
     <Grid container spacing={6}> 
@@ -111,11 +115,11 @@ const ProductDetails = () => {
             />
           </Grid>
           <Grid item xs={6}>
-            <LoadingButton
+          <LoadingButton
               disabled={
                 item?.quantity === quantity || (!item && quantity === 0)
               }
-              loading={submitting}
+              loading={status.includes("pending")}
               onClick={handleUpdateCart}
               sx={{ height: "55px" }}
               color="primary"
@@ -127,8 +131,6 @@ const ProductDetails = () => {
             </LoadingButton>
           </Grid>
         </Grid>
-
-
       </Grid> 
     </Grid> 
   ); 

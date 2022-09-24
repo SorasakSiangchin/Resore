@@ -23,7 +23,6 @@ axios.interceptors.response.use(async (response) => {
     // จะ return ไปที่ then
     return response
 } , async (error:AxiosError)=>{
-    
     var data = await error.response?.data; //obj ที่ไม่รู้ชนิด
     var json = JSON.stringify(data); // นำมาเป็น json
     var result = JSON.parse(json); // นำมาเป็น obj

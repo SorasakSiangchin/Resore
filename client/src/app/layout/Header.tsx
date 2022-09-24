@@ -9,8 +9,8 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import { IconButton } from '@mui/material';
 import { NavLink } from 'react-router-dom';
-import { useStoreContext } from '../context/StoreContext';
 import { Link } from 'react-router-dom';
+import { useAppSelector } from '../store/configureStore';
 const label = { inputProps: { 'aria-label': 'Color switch demo' } };
 const midLinks = [ 
   { title: "catalog", path: "/catalog" }, 
@@ -37,32 +37,31 @@ const navStyles = {
 
 const Header = (props: any) => {
 
-  const { basket } = useStoreContext();
+  //const { basket } = useStoreContext();
+  const { basket } = useAppSelector(state => state.basket);
   const itemCount = basket?.items.reduce((sum, item) => sum + item.quantity, 0);
-
-
 
   return (
     <>
-      <Box sx={{ flexGrow: 1, mb: 5 }}>
+      <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
           <Toolbar sx={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }} >
-
-            <Box sx={{
+            <Box   sx={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
             }}>
               <Switch {...label} defaultChecked color="warning" onChange={props.handleMode} />
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              <IconButton component={Link} to="/" >
+              <Typography  variant="h6" component="div" sx={{ flexGrow: 1 }}>
                 BUAKAW-STORE
               </Typography>
+              </IconButton>
             </Box>
-          
             <Box >
               <List sx={{ display: "flex" }}>
                 {midLinks.map(({title , path})=>( 
