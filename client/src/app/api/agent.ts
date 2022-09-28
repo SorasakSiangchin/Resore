@@ -2,6 +2,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import { history } from "../..";
+import { PaginatedResponse } from "../models/pagination";
 
 
 // ใช้รว่มกัน
@@ -17,10 +18,16 @@ axios.defaults.withCredentials = true;
 const sleep = () => new Promise(resolve => setTimeout(resolve,100));
 
 // เป็นการแสกแสง
-// ตอนขึ้นProduction ไม่ได้ใช้
+// ตอนขึ้น Production ไม่ได้ใช้
 axios.interceptors.response.use(async (response) => {
     await sleep();
     // จะ return ไปที่ then
+    const pagination = response.headers['pagination']; //ส่งมาจาก ProductController
+    if (pagination) {
+        response.data = new PaginatedResponse(response.data, JSON.parse(pagination));
+        return response;
+    }
+
     return response
 } , async (error:AxiosError)=>{
     var data = await error.response?.data; //obj ที่ไม่รู้ชนิด
@@ -58,7 +65,7 @@ axios.interceptors.response.use(async (response) => {
 });
 
 const requests = {
-    get : (url : string)=> axios.get(url).then(ResponseBody) ,
+    get: (url: string, params?: URLSearchParams) => axios.get(url, {params}).then(ResponseBody),
     // body? ส่งก็ได้ไม่ส่งก็ได้
     post : (url : string , body = {})=> axios.post(url , body).then(ResponseBody) ,
     delete : (url : string)=> axios.delete(url).then(ResponseBody) ,
@@ -66,14 +73,15 @@ const requests = {
 };
 
 const Catalog = {
-      list : () => requests.get("Products"),
-      details: (id: number) => requests.get(`Products/GetProducts/${id}`), 
+    list: (params: URLSearchParams) => requests.get('Products', params),
+    details: (id: number) => requests.get(`Products/GetProducts/${id}`), 
+    fetchFilters: () => requests.get('Products/filters'),
 };
 
 const TestError = {
     get400Error: () => requests.get('buggy/GetBadRequest'), 
     get401Error: () => requests.get('buggy/GetUnAuthorized'),
-    get404Error : ()=>requests.get("Buggy/GetNotFound"),
+    get404Error : ()=>requests.get("buggy/GetNotFound"),
     get500Error: () => requests.get('buggy/GetServerError'), 
     getValidationError: () => requests.get('buggy/GetValidationError'), 
 };
