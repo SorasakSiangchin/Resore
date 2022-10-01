@@ -27,6 +27,7 @@ export default function BasketPage() {
   // });
 
   const { basket, status } = useAppSelector(state => state.basket);
+  
   // const { removeItem } = useStoreContext();
 
   // function handleAddItem(productId: number, name: string) {

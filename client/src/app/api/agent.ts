@@ -3,6 +3,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import { history } from "../..";
 import { PaginatedResponse } from "../models/pagination";
+import { store } from "../store/configureStore";
 
 
 // ใช้รว่มกัน
@@ -16,6 +17,15 @@ axios.defaults.withCredentials = true;
 };
 
 const sleep = () => new Promise(resolve => setTimeout(resolve,100));
+
+
+axios.interceptors.request.use((config: any) => {
+    const token = store.getState().account.user?.token; //เรียกใช้ State โดยตรง
+    // แนบ token ไปกับ Header
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+})
+
 
 // เป็นการแสกแสง
 // ตอนขึ้น Production ไม่ได้ใช้
@@ -78,6 +88,13 @@ const Catalog = {
     fetchFilters: () => requests.get('Products/filters'),
 };
 
+const Account = {
+    login: (values: any) => requests.post('account/login', values),
+    register: (values: any) => requests.post('account/register', values),
+    currentUser: () => requests.get('account/currentUser'),
+}
+
+
 const TestError = {
     get400Error: () => requests.get('buggy/GetBadRequest'), 
     get401Error: () => requests.get('buggy/GetUnAuthorized'),
@@ -95,7 +112,8 @@ const Basket = {
 const agent = {
     Catalog ,
     TestError ,
-    Basket
+    Basket ,
+    Account
 };
 
 export default agent;

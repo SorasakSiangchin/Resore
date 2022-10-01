@@ -8,6 +8,7 @@ import { createBrowserHistory } from "history";
 import { Provider } from "react-redux";
 import { store } from './app/store/configureStore';
 import { fetchProductsAsync } from './features/catalog/catalogSlice';
+// history ใช้จดจำเส้นทาง
 export const history = createBrowserHistory({ window });
 // console.log(store.getState().test.myName);
 store.dispatch(fetchProductsAsync());

@@ -6,13 +6,15 @@ import { testSlice } from '../../features/contact/testSlice';
 import { homeSlice } from '../../features/home/homeSlice';
 import  basketSlice  from '../../features/basket/basketSlice';
 import catalogSlice from '../../features/catalog/catalogSlice';
+import { accountSlice } from '../../features/account/accountSlice';
 export const store = configureStore({
     reducer: {
         counter: counterSlice.reducer,
         test : testSlice.reducer ,
         home : homeSlice.reducer ,
         basket : basketSlice ,
-        catalog : catalogSlice
+        catalog : catalogSlice ,
+        account : accountSlice.reducer
     } ,
     
   });
