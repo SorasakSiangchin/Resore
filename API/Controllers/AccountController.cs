@@ -26,6 +26,17 @@ namespace API.Controllers
 
         }
 
+        [Authorize]  //Token ถูกแนบมากับ axios.interceptors.request
+        [HttpGet("savedAddress")]
+        public async Task<ActionResult<UserAddress>> GetSavedAddress()
+        {
+            return await _userManager.Users
+                .Where(x => x.UserName == User.Identity.Name)
+                .Select(user => user.Address)
+                .FirstOrDefaultAsync();
+        }
+
+
         // [HttpPost("login")]
         // public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         // {
@@ -40,7 +51,7 @@ namespace API.Controllers
         //         Token = await _tokenService.GenerateToken(user),
         //     };
         // }
-                [HttpPost("login")]
+        [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
             var user = await _userManager.FindByNameAsync(loginDto.Username);

@@ -1,30 +1,37 @@
 using API.Entities;
+using API.Entities.OrderAggregate;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore; 
+using Microsoft.EntityFrameworkCore;
 namespace API.Data
 {
-    public class StoreContext : IdentityDbContext<User>
+    public class StoreContext : IdentityDbContext<User, Role, int>
     {
-        public StoreContext(DbContextOptions options) : base (options)
+        public StoreContext(DbContextOptions options) : base(options)
         {
-            
+
         }
 
-        public DbSet<Product> Products {get; set;}
-        public DbSet<Basket> Baskets {get; set;}
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Basket> Baskets { get; set; }
         //public DbSet<BasketItem> BasketItems {get; set;}
+        public DbSet<Order> Orders { get; set; }
 
 
         //สร้างข้อมูลเริ่มต้นให้กับ Role
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.Entity<IdentityRole>()
-            .HasData(
-                new IdentityRole {Name="Member",NormalizedName="MEMBER"},
-                new IdentityRole {Name="Admin",NormalizedName="ADMIN"}
-            );
+            builder.Entity<User>()
+                .HasOne(a => a.Address)
+                .WithOne()
+                .HasForeignKey<UserAddress>(a => a.Id)
+                .OnDelete(DeleteBehavior.Cascade); // ถ้าลบฝั่ง 1 ของฝั่ง m ก็จะหาย
+            builder.Entity<Role>()
+               .HasData(
+                   new Role { Id = 1, Name = "Member", NormalizedName = "MEMBER" },
+                   new Role { Id = 2, Name = "Admin", NormalizedName = "ADMIN" }
+               );
         }
 
     }

@@ -3,6 +3,7 @@ using System;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    partial class StoreContextModelSnapshot : ModelSnapshot
+    [Migration("20221002032319_OrderEntityAdded")]
+    partial class OrderEntityAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.8");
@@ -165,14 +167,14 @@ namespace API.Data.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "22b32d7b-90de-4416-b80e-a10773f1d5ba",
+                            ConcurrencyStamp = "f2e03926-5046-4a8a-8cd5-16d02d1638e4",
                             Name = "Member",
                             NormalizedName = "MEMBER"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "18390bea-2ca5-4302-9e69-8c7ee3bf564a",
+                            ConcurrencyStamp = "c42b6727-deca-4a00-9c2a-d7c828895afb",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -398,27 +400,6 @@ namespace API.Data.Migrations
                         {
                             b1.Property<int>("OrderId")
                                 .HasColumnType("INTEGER");
-
-                            b1.Property<string>("Address1")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("Address2")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("City")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("Country")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("FullName")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("State")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("Zip")
-                                .HasColumnType("TEXT");
 
                             b1.HasKey("OrderId");
 
