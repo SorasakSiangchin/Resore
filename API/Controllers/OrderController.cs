@@ -75,6 +75,7 @@ namespace API.Controllers
             var deliveryFee = subtotal > 10000 ? 0 : 500;
 
             //รวบรวม Order,OrderItems
+            //เอาตะกร้าใส่ใบสั่งซื้อ
             var order = new Order
             {
                 OrderItems = items,
@@ -82,6 +83,7 @@ namespace API.Controllers
                 ShippingAddress = orderDto.ShippingAddress,
                 Subtotal = subtotal,
                 DeliveryFee = deliveryFee,
+                PaymentIntentId = basket.PaymentIntentId // เพิ่มมาใหม่
             };
 
             _context.Orders.Add(order); //สร้าง Order และ OrderItem ในขั้นตอนเดียว

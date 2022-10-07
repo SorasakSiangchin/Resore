@@ -16,7 +16,6 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingComponent from './LoadingComponent';
 import BasketPage from '../../features/basket/BasketPage';
-import CheckoutPage from '../../features/checkout/CheckoutPage';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useAppDispatch, useAppSelector } from '../store/configureStore';
@@ -26,6 +25,7 @@ import Login from '../../features/account/Login';
 import { fetchCurrentUser } from '../../features/account/accountSlice';
 import { PrivateLogin, PrivateRoute } from './PrivateRoute';
 import OrderPage from '../../features/orders/OrderPage';
+import CheckoutWrapper from '../../features/checkout/CheckoutWrapper';
 
 const App = () => {
   //const { setBasket } = useStoreContext(); //ควบคุมสเตทด้วย React context to Centralize
@@ -110,7 +110,7 @@ const mainRoute = (
       }
     />
     <Route element={<PrivateRoute />}>
-      <Route path="/checkout" element={<CheckoutPage />} />
+      <Route path="/checkout" element={<CheckoutWrapper />} />
       <Route path="/order" element={<OrderPage/>}/>
     </Route>
   </Routes>
