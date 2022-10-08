@@ -7,7 +7,8 @@ import { store } from "../store/configureStore";
 
 
 // ใช้รว่มกัน
-axios.defaults.baseURL = "http://localhost:5000/api/";
+// axios.defaults.baseURL = "http://localhost:5000/api/";
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 
 //ให้เครดิตความน่าเชื่อถือ ขออนุญาติเข้าถึง cookies
 axios.defaults.withCredentials = true; 
@@ -30,7 +31,8 @@ axios.interceptors.request.use((config: any) => {
 // เป็นการแสกแสง
 // ตอนขึ้น Production ไม่ได้ใช้
 axios.interceptors.response.use(async (response) => {
-    await sleep();
+    // ให้มันหน่วงเวลาเฉพาะตอนพัฒนา
+    if(process.env.NODE_ENV === 'development')  await sleep()
     // จะ return ไปที่ then
     const pagination = response.headers['pagination']; //ส่งมาจาก ProductController
     if (pagination) {
